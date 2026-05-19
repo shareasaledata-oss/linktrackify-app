@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 const NAV_LINKS = [
   { label: "How It Works", href: "#how-it-works" },
@@ -173,7 +173,7 @@ function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <a href="#" className="flex items-center gap-2">
+          <a href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={2.2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -620,7 +620,7 @@ function Footer() {
               <ul className="space-y-2.5">
                 {col.links.map((link) => (
                   <li key={link}>
-                    <a href="#" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">{link}</a>
+                    <a href="/#" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">{link}</a>
                   </li>
                 ))}
               </ul>
