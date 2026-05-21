@@ -6,6 +6,13 @@ import Advertisers from "./pages/Advertisers";
 import Publishers from "./pages/Publishers";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
+import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import Register from "./pages/Register";
+import PublisherRegister from "./pages/PublisherRegister";
+import AdvertiserRegister from "./pages/AdvertiserRegister";
+import Terms from "./pages/Terms";
+import RegistrationSuccess from "./pages/RegistrationSuccess";
 
 // Animation Variants
 const fadeUp = {
@@ -210,6 +217,8 @@ function Navbar() {
   }, []);
 
   useEffect(() => { setMenuOpen(false); }, [location]);
+
+  if (['/login', '/forgot-password', '/register', '/publisher/register', '/advertiser/register', '/terms', '/registration-success'].includes(location.pathname)) return null;
 
   return (
     <motion.nav
@@ -696,18 +705,30 @@ function HomePage() {
   );
 }
 
+const NO_LAYOUT_PAGES = ['/login', '/forgot-password', '/register', '/publisher/register', '/advertiser/register', '/terms', '/registration-success'];
+
 export default function App() {
+  const location = useLocation();
+  const hideLayout = NO_LAYOUT_PAGES.includes(location.pathname);
   return (
     <div className="font-sans antialiased">
-      <Navbar />
+      {!hideLayout && <Navbar />}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/advertisers" element={<Advertisers />} />
         <Route path="/publishers" element={<Publishers />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/publisher/register" element={<PublisherRegister />} />
+        <Route path="/advertiser/register" element={<AdvertiserRegister />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/registration-success" element={<RegistrationSuccess />} />
+        
       </Routes>
-      <Footer />
+      {!hideLayout && <Footer />}
     </div>
   );
 }
