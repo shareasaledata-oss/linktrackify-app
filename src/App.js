@@ -253,8 +253,8 @@ function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200 hover:-translate-y-0.5">Log in</Link>
-            <Link to="/register" className="relative text-sm font-semibold text-white bg-blue-600 px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200 active:translate-y-0 overflow-hidden group">
+            <Link to="https://app.linktrackify.com/login" className="text-sm font-medium text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200 hover:-translate-y-0.5">Log in</Link>
+            <Link to="https://app.linktrackify.com/register" className="relative text-sm font-semibold text-white bg-blue-600 px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200 active:translate-y-0 overflow-hidden group">
               <span className="relative z-10">Get Started</span>
             </Link>
           </div>
@@ -272,8 +272,8 @@ function Navbar() {
               <Link key={l.label} to={l.href} className={`block px-4 py-2.5 text-sm rounded-lg font-medium transition-all duration-200 ${location.pathname === l.href ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50"}`}>{l.label}</Link>
             ))}
             <div className="pt-3 flex flex-col gap-2 px-2">
-              <Link to="/login" className="text-center text-sm font-medium text-gray-700 border border-gray-200 py-2.5 rounded-lg hover:bg-gray-50 transition-all">Log in</Link>
-              <Link to="/register" className="text-center text-sm font-semibold text-white bg-blue-600 py-2.5 rounded-lg hover:bg-blue-700 transition-all">Get Started</Link>
+              <Link to="https://app.linktrackify.com/login" className="text-center text-sm font-medium text-gray-700 border border-gray-200 py-2.5 rounded-lg hover:bg-gray-50 transition-all">Log in</Link>
+              <Link to="https://app.linktrackify.com/register" className="text-center text-sm font-semibold text-white bg-blue-600 py-2.5 rounded-lg hover:bg-blue-700 transition-all">Get Started</Link>
             </div>
           </motion.div>
         )}
@@ -310,7 +310,7 @@ function Hero() {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link to="/register" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-all shadow-md shadow-blue-100 text-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200">
+            <Link to="https://app.linktrackify.com/register" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-all shadow-md shadow-blue-100 text-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200">
               Start for free
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </Link>
@@ -491,7 +491,7 @@ function PublishersSection() {
                   </li>
                 ))}
               </ul>
-              <Link to="/register" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-sm text-sm hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-200">
+              <Link to="https://app.linktrackify.com/register" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-sm text-sm hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-200">
                 Join as a Publisher
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </Link>
@@ -634,7 +634,7 @@ function CTA() {
           <h2 className="text-4xl lg:text-5xl font-bold text-white tracking-tight mb-5">Ready to start earning?</h2>
           <p className="text-blue-100 text-lg mb-10 max-w-xl mx-auto">Join Linktrackify today and get access to hundreds of merchant programs, real-time tracking, and reliable commission payouts.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/register" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-blue-700 font-bold px-8 py-4 rounded-xl transition-all shadow-md text-sm hover:-translate-y-0.5 hover:shadow-lg">
+            <Link to="https://app.linktrackify.com/register" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-blue-700 font-bold px-8 py-4 rounded-xl transition-all shadow-md text-sm hover:-translate-y-0.5 hover:shadow-lg">
               Create your free account
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </Link>
