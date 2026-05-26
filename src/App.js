@@ -14,78 +14,34 @@ import AdvertiserRegister from "./pages/AdvertiserRegister";
 import Terms from "./pages/Terms";
 import RegistrationSuccess from "./pages/RegistrationSuccess";
 
-// Animation Variants
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
-
 const slideLeft = {
   hidden: { opacity: 0, x: -50 },
   visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" } },
 };
-
 const slideRight = {
   hidden: { opacity: 0, x: 50 },
   visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" } },
 };
-
 const staggerContainer = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.12 } },
 };
-
 const cardVariant = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
-// Scroll animation wrapper
 function AnimateOnScroll({ children, variants = fadeUp, className = "" }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   return (
-    <motion.div
-      ref={ref}
-      variants={variants}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      className={className}
-    >
+    <motion.div ref={ref} variants={variants} initial="hidden" animate={isInView ? "visible" : "hidden"} className={className}>
       {children}
     </motion.div>
-  );
-}
-
-// Counter animation
-function AnimatedCounter({ value, suffix = "" }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
-  const numericValue = parseInt(value.replace(/[^0-9]/g, ""));
-
-  useEffect(() => {
-    if (!isInView) return;
-    let start = 0;
-    const duration = 1500;
-    const increment = numericValue / (duration / 16);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= numericValue) {
-        setCount(numericValue);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [isInView, numericValue]);
-
-  const isNumeric = /^\d/.test(value);
-  return (
-    <span ref={ref}>
-      {isNumeric ? `${count}${value.replace(/[0-9]/g, "")}` : value}
-    </span>
   );
 }
 
@@ -97,114 +53,16 @@ const NAV_LINKS = [
   { label: "Contact Us", href: "/contact-us" },
 ];
 
-const STATS = [
-  { value: "500+", label: "Merchant Programs" },
-  { value: "98%", label: "Link Uptime" },
-  { value: "Real-time", label: "Commission Tracking" },
-  { value: "Awin & Impact", label: "Network Integrations" },
-];
-
-const STEPS = [
-  {
-    number: "01",
-    title: "Create Your Account",
-    desc: "Register in minutes. Complete your profile and get approved to access our curated merchant network.",
-    icon: (
-      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-    ),
-  },
-  {
-    number: "02",
-    title: "Browse & Join Programs",
-    desc: "Explore 500+ approved merchant programs across fashion, tech, finance, and lifestyle. Apply with one click.",
-    icon: (
-      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-      </svg>
-    ),
-  },
-  {
-    number: "03",
-    title: "Generate Tracking Links",
-    desc: "Instantly create branded, trackable affiliate links for any approved program. Fully monitored from day one.",
-    icon: (
-      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-      </svg>
-    ),
-  },
-  {
-    number: "04",
-    title: "Track & Earn",
-    desc: "Monitor clicks, conversions, and commissions in real time. Get paid on a transparent, reliable schedule.",
-    icon: (
-      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    ),
-  },
-];
-
-const FEATURES = [
-  {
-    title: "Smart Link Generation",
-    desc: "Generate branded, redirect-ready affiliate links in seconds. Every link is tracked, timestamped, and tied to your account.",
-    icon: (<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>),
-    color: "bg-blue-50 text-blue-600",
-  },
-  {
-    title: "Real-Time Analytics",
-    desc: "See clicks, conversions, and revenue as they happen. No delays, no guesswork — just clean, accurate performance data.",
-    icon: (<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>),
-    color: "bg-emerald-50 text-emerald-600",
-  },
-  {
-    title: "Awin & Impact Integration",
-    desc: "We're connected to industry-leading affiliate networks so you gain access to premium, pre-approved merchant programs.",
-    icon: (<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>),
-    color: "bg-violet-50 text-violet-600",
-  },
-  {
-    title: "Commission Transparency",
-    desc: "You always see exactly what rate you earn per program. No hidden deductions, no surprise adjustments at payout.",
-    icon: (<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>),
-    color: "bg-amber-50 text-amber-600",
-  },
-  {
-    title: "Merchant Program Directory",
-    desc: "Browse a curated, categorized list of merchant programs with commission rates, cookie windows, and payout schedules.",
-    icon: (<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>),
-    color: "bg-rose-50 text-rose-600",
-  },
-  {
-    title: "Reliable Payouts",
-    desc: "Commissions are consolidated and paid on a structured schedule. Your earnings are reconciled against network data automatically.",
-    icon: (<svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>),
-    color: "bg-cyan-50 text-cyan-600",
-  },
-];
-
-const BENEFITS = [
-  { label: "No setup fees" },
-  { label: "Pre-approved merchant access" },
-  { label: "Transparent commission rates" },
-  { label: "Real-time reporting dashboard" },
-  { label: "Dedicated publisher support" },
-  { label: "Structured payout schedule" },
-];
-
-const NETWORKS = ["Awin", "Impact", "Rakuten", "CJ Affiliate", "ShareASale"];
-
 const FAQS = [
-  { q: "What is Linktrackify?", a: "Linktrackify is an affiliate marketing platform that connects publishers with merchant programs from top affiliate networks. You generate tracking links, promote products, and earn commissions on validated sales." },
-  { q: "How do I join merchant programs?", a: "After creating your account, browse our merchant directory and submit join requests. Since we hold agency accounts with Awin and Impact, approvals are faster than applying directly." },
-  { q: "How are commissions calculated?", a: "Each merchant program shows a clear commission rate. When a sale is validated by the network, your commission is recorded in your dashboard and included in the next payout cycle." },
-  { q: "When do I get paid?", a: "Payouts are processed on a structured schedule once your balance reaches the minimum threshold. Payment methods and schedules are shown in your account settings." },
-  { q: "What affiliate networks are you connected to?", a: "We currently integrate with Awin and Impact, with additional network integrations in progress. This gives you access to thousands of globally recognized merchant programs." },
+  { q: "What is Linktrackify?", a: "Linktrackify is a performance affiliate network that connects publishers with merchant programmes from leading affiliate networks including Awin and Impact. We operate on a pure cost-per-action model — advertisers only pay when a confirmed, validated sale or action is delivered." },
+  { q: "How do I join as a publisher?", a: "Submit your application through our publisher registration page. Our team reviews each application for traffic quality, promotional methods, and compliance standards before granting access to our programme directory." },
+  { q: "How does the advertiser model work?", a: "Advertisers define their target cost-per-action parameters and integrate via our tracking layer. You only pay for validated conversions that meet your exact compliance and verification standards — no upfront fees, no wasted spend." },
+  { q: "How are commissions calculated and paid?", a: "Each programme displays a clear commission rate before you apply. Once a sale is validated by the network, your commission is recorded and included in the next structured payout cycle. All rates are visible and agreed upon in advance." },
+  { q: "What affiliate networks are you connected to?", a: "We currently integrate with Awin and Impact — two of the world's leading affiliate networks. This provides access to thousands of vetted merchant programmes across retail, technology, finance, health, and travel sectors." },
+  { q: "How do you protect against fraud?", a: "Our platform employs continuous monitoring of all tracking data to detect and eliminate artificial clicks, duplicate actions, and non-compliant promotional methods. Every publisher is screened before gaining access, and all activity is monitored throughout the campaign lifecycle." },
 ];
 
+// ─── NAVBAR ───────────────────────────────────────────────────────────────────
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -225,8 +83,7 @@ function Navbar() {
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100" : "bg-white/90 backdrop-blur-sm"}`}
-    >
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100" : "bg-white/90 backdrop-blur-sm"}`}>
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2 group">
@@ -254,8 +111,8 @@ function Navbar() {
 
           <div className="hidden md:flex items-center gap-3">
             <Link to="https://app.linktrackify.com/login" className="text-sm font-medium text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200 hover:-translate-y-0.5">Log in</Link>
-            <Link to="https://app.linktrackify.com/register" className="relative text-sm font-semibold text-white bg-blue-600 px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200 active:translate-y-0 overflow-hidden group">
-              <span className="relative z-10">Get Started</span>
+            <Link to="https://app.linktrackify.com/register" className="text-sm font-semibold text-white bg-blue-600 px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200">
+              Get Started
             </Link>
           </div>
 
@@ -282,6 +139,7 @@ function Navbar() {
   );
 }
 
+// ─── HERO ─────────────────────────────────────────────────────────────────────
 function Hero() {
   return (
     <section className="pt-32 pb-20 px-6 lg:px-8 bg-white relative overflow-hidden">
@@ -293,53 +151,92 @@ function Hero() {
         <div className="max-w-3xl mx-auto text-center mb-14">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6 border border-blue-100">
-            <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
-            Now live — Awin & Impact integrations available
+            <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+            Pure Performance · Zero Upfront Risk · Pay Only for Results
           </motion.div>
 
           <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
             className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight tracking-tight mb-6">
-            Earn commissions from<br />
-            <span className="text-blue-600">top global brands</span>
+            Performance-First Affiliate<br />
+            <span className="text-blue-600">&amp; Partnership Management</span>
           </motion.h1>
 
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg text-gray-500 leading-relaxed max-w-2xl mx-auto mb-10">
-            Linktrackify connects publishers with pre-approved merchant programs from leading affiliate networks. Generate tracking links, monitor performance, and get paid — all in one platform.
+            Scale your digital distribution with zero upfront risk. Linktrackify connects ambitious brands with a vetted network of performance publishers — you only invest capital when a confirmed sale or action is delivered.
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link to="https://app.linktrackify.com/register" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-all shadow-md shadow-blue-100 text-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200">
-              Start for free
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
+            <Link to="https://app.linktrackify.com/register"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-all shadow-md shadow-blue-100 text-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200">
+              Launch as Advertiser
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </Link>
-            <a href="#how-it-works" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-gray-700 font-semibold px-7 py-3.5 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all text-sm">
-              See how it works
-            </a>
+            <Link to="https://app.linktrackify.com/register"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-gray-700 font-semibold px-7 py-3.5 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all text-sm">
+              Apply as Publisher
+            </Link>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.6 }}
+            className="flex flex-wrap items-center justify-center gap-3">
+            {[
+              { label: "Awin Partner", color: "bg-blue-50 text-blue-700 border-blue-100" },
+              { label: "Impact Partner", color: "bg-indigo-50 text-indigo-700 border-indigo-100" },
+              { label: "CPA Model", color: "bg-emerald-50 text-emerald-700 border-emerald-100" },
+              { label: "Real-Time Tracking", color: "bg-amber-50 text-amber-700 border-amber-100" },
+              { label: "Fraud Protection", color: "bg-rose-50 text-rose-700 border-rose-100" },
+            ].map((badge) => (
+              <span key={badge.label} className={`text-xs font-semibold px-4 py-1.5 rounded-full border ${badge.color}`}>{badge.label}</span>
+            ))}
           </motion.div>
         </div>
 
-        <motion.div variants={staggerContainer} initial="hidden" animate="visible"
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
-          {STATS.map((s) => (
-            <motion.div key={s.label} variants={cardVariant}
-              className="bg-white border border-gray-100 rounded-2xl p-5 text-center shadow-sm hover:shadow-md transition-shadow">
-              <div className="text-2xl font-bold text-gray-900 mb-1">
-                <AnimatedCounter value={s.value} />
+        {/* Dashboard Mockup */}
+        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.7 }}
+          className="max-w-4xl mx-auto bg-gray-50 rounded-3xl border border-gray-200 p-6 shadow-xl shadow-gray-100">
+          <div className="flex items-center gap-2 mb-4 pb-4 border-b border-gray-200">
+            <div className="flex gap-1.5">
+              {["bg-red-400", "bg-yellow-400", "bg-green-400"].map((c) => <div key={c} className={`w-3 h-3 rounded-full ${c}`} />)}
+            </div>
+            <div className="flex-1 bg-white rounded-lg h-7 flex items-center justify-center border border-gray-100">
+              <span className="text-xs text-gray-400">app.linktrackify.com/dashboard</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 gap-3 mb-4">
+            {[
+              { label: "Total Clicks", value: "24,891", change: "+12.4%", color: "text-emerald-600" },
+              { label: "Conversions", value: "1,247", change: "+8.2%", color: "text-emerald-600" },
+              { label: "Earnings", value: "$3,842", change: "+15.7%", color: "text-emerald-600" },
+              { label: "Active Programs", value: "18", change: "+3", color: "text-blue-600" },
+            ].map((stat) => (
+              <div key={stat.label} className="bg-white rounded-xl p-3 border border-gray-100">
+                <div className="text-xs text-gray-400 mb-1">{stat.label}</div>
+                <div className="text-lg font-bold text-gray-900">{stat.value}</div>
+                <div className={`text-xs font-semibold ${stat.color}`}>{stat.change}</div>
               </div>
-              <div className="text-xs text-gray-500 font-medium">{s.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.6 }}
-          className="mt-14 text-center">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-5">Connected affiliate networks</p>
-          <div className="flex flex-wrap items-center justify-center gap-6">
-            {NETWORKS.map((n, i) => (
-              <motion.span key={n} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 + i * 0.1 }}
-                className="text-sm font-semibold text-gray-400 hover:text-gray-600 transition-colors">{n}</motion.span>
+            ))}
+          </div>
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+            {[
+              { name: "NovaTech Electronics", commission: "8%", status: "Active", earnings: "$842.50" },
+              { name: "LuxeStyle Fashion", commission: "12%", status: "Active", earnings: "$1,204.80" },
+              { name: "GreenLeaf Wellness", commission: "15%", status: "Pending", earnings: "$0.00" },
+            ].map((prog, i) => (
+              <div key={prog.name} className={`flex items-center justify-between px-4 py-3 ${i < 2 ? "border-b border-gray-50" : ""}`}>
+                <div className="flex items-center gap-3">
+                  <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center text-xs font-bold text-blue-600">{prog.name[0]}</div>
+                  <div>
+                    <div className="text-xs font-medium text-gray-800">{prog.name}</div>
+                    <div className="text-xs text-gray-400">Commission: {prog.commission}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${prog.status === "Active" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>{prog.status}</span>
+                  <span className="text-xs font-bold text-gray-900">{prog.earnings}</span>
+                </div>
+              </div>
             ))}
           </div>
         </motion.div>
@@ -348,33 +245,53 @@ function Hero() {
   );
 }
 
+// ─── HOW IT WORKS ─────────────────────────────────────────────────────────────
 function HowItWorks() {
+  const steps = [
+    {
+      number: "01",
+      title: "Strategic Alignment",
+      subtitle: "Onboarding",
+      desc: "Brands define their target cost-per-action parameters, and qualified publishers align their traffic channels to match those specific parameters.",
+      icon: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+    },
+    {
+      number: "02",
+      title: "Verified Traffic Deployment",
+      subtitle: "Execution",
+      desc: "Our tracking layer monitors every click and conversion source in real-time, matching traffic with optimised consumer touchpoints across all active campaigns.",
+      icon: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+    },
+    {
+      number: "03",
+      title: "Validated Payouts",
+      subtitle: "The Performance Loop",
+      desc: "Advertisers only pay for actions that meet their exact compliance and verification standards. Publishers receive consistent, reliable payouts for verified results.",
+      icon: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+    },
+  ];
+
   return (
     <section id="how-it-works" className="py-24 px-6 lg:px-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         <AnimateOnScroll className="text-center mb-16">
           <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">How It Works</p>
-          <h2 className="text-4xl font-bold text-gray-900 tracking-tight mb-4">From signup to earnings in 4 steps</h2>
-          <p className="text-gray-500 max-w-xl mx-auto">A straightforward process designed to get you promoting and earning as fast as possible.</p>
+          <h2 className="text-4xl font-bold text-gray-900 tracking-tight mb-4">A Risk-Free Ecosystem Built for Scale</h2>
+          <p className="text-gray-500 max-w-xl mx-auto">Simple, structured, and built around a pure performance model — so every party only wins when results are delivered.</p>
         </AnimateOnScroll>
 
         <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }}
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {STEPS.map((step, i) => (
+          className="grid md:grid-cols-3 gap-8 relative">
+          <div className="hidden md:block absolute top-12 left-[38%] right-[38%] h-0.5 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 z-0" />
+          {steps.map((step) => (
             <motion.div key={step.number} variants={cardVariant}
-              className="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-              {i < STEPS.length - 1 && (
-                <div className="hidden lg:block absolute top-10 -right-3 z-10">
-                  <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#d1d5db" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              )}
-              <div className="flex items-center justify-between mb-5">
-                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">{step.icon}</div>
-                <span className="text-3xl font-black text-gray-100">{step.number}</span>
+              className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 z-10">
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-100">{step.icon}</div>
+                <span className="text-4xl font-black text-gray-100">{step.number}</span>
               </div>
-              <h3 className="font-bold text-gray-900 mb-2 text-base">{step.title}</h3>
+              <div className="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-2">{step.subtitle}</div>
+              <h3 className="font-bold text-gray-900 mb-3 text-lg">{step.title}</h3>
               <p className="text-sm text-gray-500 leading-relaxed">{step.desc}</p>
             </motion.div>
           ))}
@@ -384,24 +301,52 @@ function HowItWorks() {
   );
 }
 
+// ─── TRAFFIC CHANNELS ─────────────────────────────────────────────────────────
 function Features() {
+  const channels = [
+    {
+      title: "Content Creators & Review Sites",
+      desc: "Deep-dive product reviews, contextual lifestyle blogs, and editorial recommendations that build consumer trust and drive intentional sales.",
+      icon: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
+      color: "bg-blue-50 text-blue-600",
+    },
+    {
+      title: "Targeted Promotional & Voucher Spaces",
+      desc: "High-intent, deal-focused platforms that capture buyers at the exact point of purchase, accelerating conversion rates and minimising cart abandonment.",
+      icon: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>,
+      color: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      title: "Paid Media & Performance PPC",
+      desc: "Expertly managed search and display strategies optimised strictly around target margins to capture clear consumer demand safely and efficiently.",
+      icon: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" /></svg>,
+      color: "bg-violet-50 text-violet-600",
+    },
+    {
+      title: "Social Commerce & Influencer Networks",
+      desc: "Audience-aligned social amplification across modern networks, turning brand engagement into measurable, trackable acquisitions at scale.",
+      icon: <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+      color: "bg-rose-50 text-rose-600",
+    },
+  ];
+
   return (
     <section id="features" className="py-24 px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <AnimateOnScroll className="text-center mb-16">
-          <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Platform Features</p>
-          <h2 className="text-4xl font-bold text-gray-900 tracking-tight mb-4">Everything you need to succeed</h2>
-          <p className="text-gray-500 max-w-xl mx-auto">Built for publishers who want a clean, reliable, and transparent affiliate experience.</p>
+          <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Traffic Channels</p>
+          <h2 className="text-4xl font-bold text-gray-900 tracking-tight mb-4">Diversified Performance Channels</h2>
+          <p className="text-gray-500 max-w-xl mx-auto">We work with a broad spectrum of publisher traffic sources — each vetted, monitored, and optimised to deliver compliant, high-quality results for your brand.</p>
         </AnimateOnScroll>
 
         <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {FEATURES.map((f) => (
-            <motion.div key={f.title} variants={cardVariant}
-              className="group p-6 rounded-2xl border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all bg-white">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${f.color}`}>{f.icon}</div>
-              <h3 className="font-bold text-gray-900 mb-2">{f.title}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {channels.map((c) => (
+            <motion.div key={c.title} variants={cardVariant}
+              className="group p-6 rounded-2xl border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all bg-white hover:-translate-y-1">
+              <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${c.color}`}>{c.icon}</div>
+              <h3 className="font-bold text-gray-900 mb-3 text-base leading-tight">{c.title}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">{c.desc}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -410,61 +355,134 @@ function Features() {
   );
 }
 
+// ─── INDUSTRIES ───────────────────────────────────────────────────────────────
 function EarningsFlow() {
-  const nodes = [
-    { label: "Merchant", sub: "Sets commission rate", color: "bg-slate-800 text-white", sub_color: "text-slate-300" },
-    { label: "Linktrackify", sub: "Platform margin", color: "bg-blue-600 text-white", sub_color: "text-blue-200" },
-    { label: "You (Publisher)", sub: "Your commission", color: "bg-emerald-500 text-white", sub_color: "text-emerald-100" },
+  const industries = [
+    {
+      title: "Retail & E-Commerce",
+      desc: "Accelerating product velocity through scalable digital partnerships and high-intent consumer traffic.",
+      icon: <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>,
+    },
+    {
+      title: "Technology & Subscriptions",
+      desc: "Driving recurring user acquisition and software trials on a pure outcome-based model.",
+      icon: <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
+    },
+    {
+      title: "Health, Beauty & Lifestyle",
+      desc: "Aligning trend-conscious audiences with trusted wellness and direct-to-consumer brands at scale.",
+      icon: <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>,
+    },
+    {
+      title: "Consumer Services",
+      desc: "Securing high-intent customer acquisitions and qualified actions across competitive service sectors.",
+      icon: <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
+    },
+    {
+      title: "Finance & Insurance",
+      desc: "Performance-driven lead generation and customer acquisition for regulated financial service providers.",
+      icon: <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+    },
+    {
+      title: "Travel & Hospitality",
+      desc: "Connecting travel-intent audiences with airline, hotel, and booking platform partners on a cost-per-booking model.",
+      icon: <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" /></svg>,
+    },
   ];
 
   return (
     <section className="py-24 px-6 lg:px-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         <AnimateOnScroll className="text-center mb-16">
-          <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Earnings Model</p>
-          <h2 className="text-4xl font-bold text-gray-900 tracking-tight mb-4">Simple, transparent revenue sharing</h2>
-          <p className="text-gray-500 max-w-xl mx-auto">Merchants pay a commission on every validated sale. Linktrackify takes a small margin — the rest goes directly to you.</p>
+          <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Industries We Serve</p>
+          <h2 className="text-4xl font-bold text-gray-900 tracking-tight mb-4">Tailored Performance Strategies Across Major Sectors</h2>
+          <p className="text-gray-500 max-w-xl mx-auto">We understand that different industries have distinct requirements. Our team structures each programme to align with the compliance, margin, and audience needs of your sector.</p>
         </AnimateOnScroll>
 
-        <div className="max-w-3xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-0">
-            {nodes.map((node, i) => (
-              <div key={node.label} className="flex flex-col md:flex-row items-center w-full md:w-auto">
-                <AnimateOnScroll variants={i === 0 ? slideLeft : i === 2 ? slideRight : fadeUp}>
-                  <div className={`${node.color} rounded-2xl px-8 py-6 text-center min-w-[160px] shadow-md`}>
-                    <div className="font-bold text-base mb-1">{node.label}</div>
-                    <div className={`text-xs ${node.sub_color}`}>{node.sub}</div>
-                  </div>
-                </AnimateOnScroll>
-                {i < nodes.length - 1 && (
-                  <div className="flex md:flex-row flex-col items-center my-2 md:my-0 md:mx-2">
-                    <div className="w-px h-6 md:w-8 md:h-px bg-gray-300"></div>
-                    <svg className="rotate-90 md:rotate-0" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#9ca3af" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                    <div className="w-px h-6 md:w-8 md:h-px bg-gray-300"></div>
-                  </div>
-                )}
+        <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }}
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {industries.map((ind) => (
+            <motion.div key={ind.title} variants={cardVariant}
+              className="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all hover:-translate-y-0.5">
+              <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">{ind.icon}</div>
+              <div>
+                <h3 className="font-bold text-gray-900 mb-1.5 text-sm">{ind.title}</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">{ind.desc}</p>
               </div>
-            ))}
-          </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
 
-          <AnimateOnScroll>
-            <div className="mt-10 bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-              <p className="text-sm font-semibold text-gray-700 mb-4">Example commission breakdown</p>
-              <div className="space-y-3">
+// ─── COMPLIANCE ───────────────────────────────────────────────────────────────
+function PublishersSection() {
+  const complianceFeatures = [
+    {
+      title: "In-Depth Screening Protocol",
+      desc: "Every publisher undergoes a rigorous background review of their traffic methods, promotional histories, and compliance standards before joining.",
+      icon: <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
+    },
+    {
+      title: "Active Fraud Mitigation",
+      desc: "Continuous monitoring of tracking data to eliminate artificial clicks, duplicate actions, and misleading promotional methods.",
+      icon: <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>,
+    },
+    {
+      title: "Strict Code & Copy Adherence",
+      desc: "Ensuring all promotional voucher codes, deals, and marketing messages remain updated, authorised, and accurate at all times.",
+      icon: <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>,
+    },
+  ];
+
+  return (
+    <section className="py-24 px-6 lg:px-8 bg-white">
+      <div className="max-w-7xl mx-auto">
+        <AnimateOnScroll className="text-center mb-16">
+          <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Compliance & Brand Safety</p>
+          <h2 className="text-4xl font-bold text-gray-900 tracking-tight mb-4">Built-In Brand Safety & Compliance Control</h2>
+          <p className="text-gray-500 max-w-2xl mx-auto">Growth is meaningless without integrity. Linktrackify protects your brand equity at every step of the campaign life cycle — from publisher onboarding to payout validation.</p>
+        </AnimateOnScroll>
+
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <AnimateOnScroll variants={slideLeft}>
+            <div className="space-y-6">
+              {complianceFeatures.map((f) => (
+                <div key={f.title} className="flex gap-5 p-6 bg-gray-50 rounded-2xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50/30 transition-all">
+                  <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm shadow-blue-200">{f.icon}</div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1.5">{f.title}</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </AnimateOnScroll>
+
+          <AnimateOnScroll variants={slideRight}>
+            <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-8 text-white shadow-xl shadow-blue-100">
+              <div className="mb-6">
+                <div className="text-xs font-semibold uppercase tracking-widest text-blue-200 mb-2">Our Commitment</div>
+                <h3 className="text-2xl font-bold leading-tight">Every campaign is monitored. Every publisher is verified. Every payout is validated.</h3>
+              </div>
+              <div className="space-y-4">
                 {[
-                  { label: "Merchant commission rate", value: "20%", color: "text-slate-700" },
-                  { label: "Linktrackify platform margin", value: "4%", color: "text-blue-600" },
-                  { label: "Your earnings per sale", value: "16%", color: "text-emerald-600" },
-                ].map((row) => (
-                  <div key={row.label} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
-                    <span className="text-sm text-gray-500">{row.label}</span>
-                    <span className={`text-sm font-bold ${row.color}`}>{row.value}</span>
+                  "Real-time campaign monitoring dashboard",
+                  "Publisher traffic source verification",
+                  "Automated fraud detection systems",
+                  "Manual compliance review for flagged activity",
+                  "Network-level transaction validation",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-3">
+                    <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                    <span className="text-sm text-blue-100">{item}</span>
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-gray-400 mt-4">* Rates vary by merchant program. Always visible before you join.</p>
             </div>
           </AnimateOnScroll>
         </div>
@@ -473,124 +491,80 @@ function EarningsFlow() {
   );
 }
 
-function PublishersSection() {
+// ─── DUAL VALUE PROPOSITION ───────────────────────────────────────────────────
+function AdvertisersSection() {
   return (
-    <section id="publishers" className="py-24 px-6 lg:px-8 bg-white">
+    <section id="advertisers" className="py-24 px-6 lg:px-8 bg-slate-900">
       <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <AnimateOnScroll className="text-center mb-16">
+          <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">Built for Both Sides</p>
+          <h2 className="text-4xl font-bold text-white tracking-tight mb-4">A Platform Designed Around Your Goals</h2>
+          <p className="text-slate-400 max-w-xl mx-auto">Whether you're scaling a brand or monetising an audience, Linktrackify provides the infrastructure, transparency, and support you need to grow.</p>
+        </AnimateOnScroll>
+
+        <div className="grid lg:grid-cols-2 gap-8">
           <AnimateOnScroll variants={slideLeft}>
-            <div>
-              <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">For Publishers</p>
-              <h2 className="text-4xl font-bold text-gray-900 tracking-tight mb-5">Monetize your audience with trusted brands</h2>
-              <p className="text-gray-500 leading-relaxed mb-8">Whether you run a blog, social media channel, newsletter, or website — Linktrackify gives you direct access to high-converting merchant programs without the hassle of individual network applications.</p>
-              <ul className="space-y-3 mb-8">
-                {BENEFITS.map((b) => (
-                  <li key={b.label} className="flex items-center gap-3 text-sm text-gray-700">
-                    <span className="w-5 h-5 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">✓</span>
-                    {b.label}
+            <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700 h-full flex flex-col">
+              <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-blue-900">
+                <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+              </div>
+              <p className="text-blue-400 text-xs font-semibold uppercase tracking-widest mb-3">For Advertisers</p>
+              <h3 className="text-2xl font-bold text-white mb-4">Uncapped Scale. Zero Waste.</h3>
+              <p className="text-slate-400 text-sm leading-relaxed mb-6">Connect your brand with a growing network of vetted publishers. You only invest capital when a confirmed, validated sale or action is delivered — no wasted ad spend, complete visibility.</p>
+              <ul className="space-y-3 mb-8 flex-1">
+                {[
+                  "Eliminate wasted ad spend with a pure pay-for-results framework",
+                  "Maintain complete control over your target customer acquisition costs",
+                  "Seamlessly integrate performance marketing with your existing channels",
+                  "Access real-time dashboards showing every click, conversion, and publisher",
+                ].map((b) => (
+                  <li key={b} className="flex items-start gap-3 text-sm text-slate-300">
+                    <span className="w-5 h-5 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                    {b}
                   </li>
                 ))}
               </ul>
-              <Link to="https://app.linktrackify.com/register" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-sm text-sm hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-200">
-                Join as a Publisher
+              <Link to="/advertisers" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all text-sm hover:-translate-y-0.5 shadow-md shadow-blue-900 w-fit">
+                Partner as an Advertiser
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </Link>
             </div>
           </AnimateOnScroll>
 
           <AnimateOnScroll variants={slideRight}>
-            <div className="bg-gray-50 rounded-3xl p-8 border border-gray-100">
-              <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-semibold text-gray-700">Your Dashboard</span>
-                  <span className="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded-full">Live</span>
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {[{ label: "Clicks", value: "1,248" }, { label: "Conversions", value: "84" }, { label: "Earnings", value: "$312.40" }].map((m) => (
-                    <div key={m.label} className="bg-gray-50 rounded-xl p-3 text-center">
-                      <div className="text-base font-bold text-gray-900">{m.value}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">{m.label}</div>
-                    </div>
-                  ))}
-                </div>
+            <div className="bg-slate-800 rounded-3xl p-8 border border-slate-700 h-full flex flex-col">
+              <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-emerald-900">
+                <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
               </div>
-              <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                <p className="text-sm font-semibold text-gray-700 mb-3">Active Programs</p>
+              <p className="text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-3">For Publishers</p>
+              <h3 className="text-2xl font-bold text-white mb-4">Monetise Content with Stability.</h3>
+              <p className="text-slate-400 text-sm leading-relaxed mb-6">Whether you run a blog, social channel, newsletter, or comparison site — Linktrackify gives you direct access to high-converting performance offers with full transparency on every commission earned.</p>
+              <ul className="space-y-3 mb-8 flex-1">
                 {[
-                  { name: "Fashion Brand Co.", rate: "14%", status: "Active" },
-                  { name: "Tech Accessories Ltd.", rate: "11%", status: "Active" },
-                  { name: "Home Decor Store", rate: "9%", status: "Pending" },
-                ].map((p) => (
-                  <div key={p.name} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
-                    <div>
-                      <div className="text-sm font-medium text-gray-800">{p.name}</div>
-                      <div className="text-xs text-gray-400">{p.rate} commission</div>
-                    </div>
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${p.status === "Active" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}>{p.status}</span>
-                  </div>
+                  "Direct access to high-converting performance offers across major sectors",
+                  "Transparent, reliable, and expedited payout cycles for approved sales",
+                  "Advanced deep-linking and reporting tools to maximise monetisation",
+                  "Dedicated support team to help optimise your promotional strategies",
+                ].map((b) => (
+                  <li key={b} className="flex items-start gap-3 text-sm text-slate-300">
+                    <span className="w-5 h-5 bg-emerald-600/20 text-emerald-400 rounded-full flex items-center justify-center text-xs flex-shrink-0 mt-0.5">✓</span>
+                    {b}
+                  </li>
                 ))}
-              </div>
-            </div>
-          </AnimateOnScroll>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AdvertisersSection() {
-  return (
-    <section id="advertisers" className="py-24 px-6 lg:px-8 bg-slate-900">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <AnimateOnScroll variants={slideLeft}>
-            <div>
-              <p className="text-blue-400 text-sm font-semibold uppercase tracking-widest mb-3">For Advertisers</p>
-              <h2 className="text-4xl font-bold text-white tracking-tight mb-5">Scale your reach through performance-based partnerships</h2>
-              <p className="text-slate-400 leading-relaxed mb-8">Connect your brand with a growing network of motivated publishers. Pay only for validated conversions — no wasted spend, full visibility.</p>
-              <div className="grid sm:grid-cols-2 gap-4 mb-8">
-                {[
-                  { title: "Performance-only model", desc: "Pay commissions only when a sale is confirmed." },
-                  { title: "Quality publisher network", desc: "All publishers are screened before gaining access." },
-                  { title: "Full tracking visibility", desc: "See clicks, conversions, and ROI in real time." },
-                  { title: "Managed via top networks", desc: "Operated through Awin and Impact infrastructure." },
-                ].map((item) => (
-                  <div key={item.title} className="bg-slate-800 rounded-xl p-4 border border-slate-700">
-                    <div className="text-sm font-semibold text-white mb-1">{item.title}</div>
-                    <div className="text-xs text-slate-400 leading-relaxed">{item.desc}</div>
-                  </div>
-                ))}
-              </div>
-              <Link to="/contact-us" className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-slate-900 font-semibold px-6 py-3 rounded-xl transition-all text-sm hover:-translate-y-0.5">
-                Get in touch
+              </ul>
+              <Link to="https://app.linktrackify.com/register" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl transition-all text-sm hover:-translate-y-0.5 shadow-md shadow-emerald-900 w-fit">
+                Apply as a Publisher
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </Link>
             </div>
           </AnimateOnScroll>
-
-          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }}
-            className="space-y-4">
-            {[
-              { icon: "🎯", title: "Cost-per-sale model", desc: "Only pay when a publisher drives a confirmed, validated sale to your store." },
-              { icon: "📊", title: "Campaign performance dashboard", desc: "Full visibility into which publishers, links, and channels are driving results." },
-              { icon: "🔗", title: "Network infrastructure", desc: "Your campaigns run on Awin and Impact — enterprise-grade reliability you can trust." },
-            ].map((card) => (
-              <motion.div key={card.title} variants={cardVariant}
-                className="bg-slate-800 rounded-2xl p-6 border border-slate-700 flex gap-4">
-                <span className="text-2xl mt-0.5">{card.icon}</span>
-                <div>
-                  <div className="text-sm font-semibold text-white mb-1">{card.title}</div>
-                  <div className="text-sm text-slate-400 leading-relaxed">{card.desc}</div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
       </div>
     </section>
   );
 }
 
+// ─── FAQ ──────────────────────────────────────────────────────────────────────
 function FAQ() {
   const [open, setOpen] = useState(null);
   return (
@@ -598,7 +572,8 @@ function FAQ() {
       <div className="max-w-3xl mx-auto">
         <AnimateOnScroll className="text-center mb-14">
           <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">FAQ</p>
-          <h2 className="text-4xl font-bold text-gray-900 tracking-tight">Common questions</h2>
+          <h2 className="text-4xl font-bold text-gray-900 tracking-tight mb-4">Common Questions</h2>
+          <p className="text-gray-500">Haven't found what you're looking for? <Link to="/contact-us" className="text-blue-600 hover:underline">Contact us.</Link></p>
         </AnimateOnScroll>
 
         <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }}
@@ -606,15 +581,14 @@ function FAQ() {
           {FAQS.map((faq, i) => (
             <motion.div key={i} variants={cardVariant} className="border border-gray-100 rounded-2xl overflow-hidden">
               <button className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors" onClick={() => setOpen(open === i ? null : i)}>
-                <span className="text-sm font-semibold text-gray-900">{faq.q}</span>
+                <span className="text-sm font-semibold text-gray-900 pr-4">{faq.q}</span>
                 <motion.svg animate={{ rotate: open === i ? 45 : 0 }} transition={{ duration: 0.2 }}
-                  className="flex-shrink-0 ml-4" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+                  className="flex-shrink-0" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                 </motion.svg>
               </button>
               {open === i && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
-                  className="px-5 pb-5">
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="px-5 pb-5">
                   <p className="text-sm text-gray-500 leading-relaxed">{faq.a}</p>
                 </motion.div>
               )}
@@ -626,21 +600,26 @@ function FAQ() {
   );
 }
 
+// ─── CTA ──────────────────────────────────────────────────────────────────────
 function CTA() {
   return (
-    <section className="py-24 px-6 lg:px-8 bg-blue-600">
+    <section className="py-24 px-6 lg:px-8 bg-white">
       <AnimateOnScroll>
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl lg:text-5xl font-bold text-white tracking-tight mb-5">Ready to start earning?</h2>
-          <p className="text-blue-100 text-lg mb-10 max-w-xl mx-auto">Join Linktrackify today and get access to hundreds of merchant programs, real-time tracking, and reliable commission payouts.</p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="https://app.linktrackify.com/register" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-blue-700 font-bold px-8 py-4 rounded-xl transition-all shadow-md text-sm hover:-translate-y-0.5 hover:shadow-lg">
-              Create your free account
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-            </Link>
-            <Link to="/contact-us" className="w-full sm:w-auto inline-flex items-center justify-center text-blue-100 hover:text-white font-semibold px-8 py-4 rounded-xl border border-blue-400 hover:border-blue-200 transition-all text-sm">
-              Talk to us first
-            </Link>
+        <div className="max-w-4xl mx-auto text-center bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-16 shadow-2xl shadow-blue-100 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.15),transparent)]" />
+          <div className="relative">
+            <p className="text-blue-200 text-sm font-semibold uppercase tracking-widest mb-4">Get Started Today</p>
+            <h2 className="text-4xl lg:text-5xl font-bold text-white tracking-tight mb-5">Ready to Align Performance with Growth?</h2>
+            <p className="text-blue-100 text-lg mb-10 max-w-xl mx-auto leading-relaxed">Contact our partnership management team today to review your programme goals, or submit your publisher application to get started immediately.</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link to="/contact-us" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-blue-700 font-bold px-8 py-4 rounded-xl transition-all shadow-md text-sm hover:-translate-y-0.5 hover:shadow-lg">
+                Get in Touch
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+              </Link>
+              <Link to="https://app.linktrackify.com/register" className="w-full sm:w-auto inline-flex items-center justify-center text-blue-100 hover:text-white font-semibold px-8 py-4 rounded-xl border border-blue-400 hover:border-blue-200 transition-all text-sm">
+                Create Account
+              </Link>
+            </div>
           </div>
         </div>
       </AnimateOnScroll>
@@ -648,6 +627,7 @@ function CTA() {
   );
 }
 
+// ─── FOOTER ───────────────────────────────────────────────────────────────────
 function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-400 pt-16 pb-8 px-6 lg:px-8">
@@ -662,11 +642,13 @@ function Footer() {
               </div>
               <span className="font-bold text-white text-base">Linktrackify</span>
             </div>
-            <p className="text-sm leading-relaxed text-gray-500">The affiliate marketing platform built for publishers who want transparency and results.</p>
+            <p className="text-sm leading-relaxed text-gray-500 mb-4">Performance-first affiliate & partnership management. Connecting ambitious brands with vetted publishers.</p>
+            <p className="text-xs text-gray-600">Covent Garden, London, UK</p>
+            <p className="text-xs text-gray-600 mt-1">linktrackify@linktrackify.com</p>
           </div>
           {[
-            { title: "Platform", links: [{ label: "How It Works", href: "/#how-it-works" }, { label: "Features", href: "/#features" }, { label: "Merchant Programs", href: "/publishers" }, { label: "Publisher Dashboard", href: "/login" }] },
-            { title: "Company", links: [{ label: "About Us", href: "/about-us" }, { label: "Publishers", href: "/publishers" }, { label: "Advertisers", href: "/advertisers" }, { label: "Contact", href: "/contact-us" }] },
+            { title: "Platform", links: [{ label: "How It Works", href: "/#how-it-works" }, { label: "Traffic Channels", href: "/#features" }, { label: "Publishers", href: "/publishers" }, { label: "Advertisers", href: "/advertisers" }] },
+            { title: "Company", links: [{ label: "About Us", href: "/about-us" }, { label: "Contact Us", href: "/contact-us" }, { label: "Publisher Login", href: "https://app.linktrackify.com/login" }, { label: "Apply Now", href: "https://app.linktrackify.com/register" }] },
             { title: "Legal", links: [{ label: "Privacy Policy", href: "/privacy" }, { label: "Terms & Conditions", href: "/terms" }, { label: "Cookie Policy", href: "/cookies" }, { label: "Imprint", href: "/imprint" }] },
           ].map((col) => (
             <div key={col.title}>
@@ -682,14 +664,18 @@ function Footer() {
           ))}
         </div>
         <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-600">© 2026 Linktrackify. All rights reserved.</p>
-          <p className="text-xs text-gray-600">support@linktrackify.com</p>
+          <p className="text-xs text-gray-600">© 2026 Linktrackify Ltd. All rights reserved.</p>
+          <div className="flex gap-4">
+            <Link to="/terms" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">Terms</Link>
+            <Link to="/privacy" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">Privacy</Link>
+          </div>
         </div>
       </div>
     </footer>
   );
 }
 
+// ─── HOME PAGE ────────────────────────────────────────────────────────────────
 function HomePage() {
   return (
     <>
@@ -705,6 +691,7 @@ function HomePage() {
   );
 }
 
+// ─── APP ──────────────────────────────────────────────────────────────────────
 const NO_LAYOUT_PAGES = ['/login', '/forgot-password', '/register', '/publisher/register', '/advertiser/register', '/terms', '/registration-success'];
 
 export default function App() {
@@ -726,7 +713,6 @@ export default function App() {
         <Route path="/advertiser/register" element={<AdvertiserRegister />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/registration-success" element={<RegistrationSuccess />} />
-        
       </Routes>
       {!hideLayout && <Footer />}
     </div>
