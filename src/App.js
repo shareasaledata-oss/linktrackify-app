@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Shield, Zap, BarChart2, Link2, CheckCircle, DollarSign, Star, Target, Lock, Users, Globe, TrendingUp, Search, Code, Package } from "lucide-react";
+import { Shield, BarChart2, Link2, DollarSign, Star, Target, Lock, Users, Globe, Search, Code, Package } from "lucide-react"; // v2
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
@@ -479,12 +479,13 @@ function Hero() {
             className="text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-6">
             <span className="shimmer-text">Performance-First Affiliate</span><br />
             <span style={{
-              background: "linear-gradient(90deg, #111827 0%, #111827 30%, #6b7280 50%, #111827 70%, #111827 100%)",
+              background: "linear-gradient(90deg, #111827 0%, #111827 30%, #9ca3af 50%, #111827 70%, #111827 100%)",
               backgroundSize: "200% auto",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
               animation: "shimmer 8s linear infinite",
+              animationDelay: "0s",
             }}>&</span><br />
             <span style={{
               background: "linear-gradient(90deg, #059669 0%, #10b981 20%, #6ee7b7 40%, #a7f3d0 50%, #6ee7b7 60%, #10b981 80%, #059669 100%)",
