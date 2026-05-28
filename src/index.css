@@ -1,3 +1,79 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 20s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+/* Shimmer text animation */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes shimmer-sync {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #1d4ed8 0%,
+    #3b82f6 20%,
+    #93c5fd 40%,
+    #ffffff 50%,
+    #93c5fd 60%,
+    #3b82f6 80%,
+    #1d4ed8 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 8s linear infinite;
+}
+
+.shimmer-text-gold {
+  background: linear-gradient(
+    90deg,
+    #059669 0%,
+    #10b981 20%,
+    #6ee7b7 40%,
+    #ffffff 50%,
+    #6ee7b7 60%,
+    #10b981 80%,
+    #059669 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 8s linear infinite;
+}
+
+.shimmer-text-emerald {
+  background: linear-gradient(
+    90deg,
+    #059669 0%,
+    #10b981 20%,
+    #6ee7b7 40%,
+    #a7f3d0 50%,
+    #6ee7b7 60%,
+    #10b981 80%,
+    #059669 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 8s linear infinite;
+}
