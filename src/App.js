@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Shield, BarChart2, Link2, DollarSign, Star, Target, Lock, Users, Globe, Search, Code, Package } from "lucide-react"; // v2
+import { useState, useEffect, useCallback } from "react";
+import { Shield, BarChart2, Link2, DollarSign, Star, Target, Lock, Users, Globe, Search, Code, Package, CheckCircle } from "lucide-react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
@@ -46,6 +46,40 @@ function AnimateOnScroll({ children, variants = fadeUp, className = "" }) {
   );
 }
 
+function useGlowCards() {
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      document.querySelectorAll('.glow-card').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--card-x', x + 'px');
+        card.style.setProperty('--card-y', y + 'px');
+      });
+    };
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => document.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+}
+
+function useTiltEffect() {
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const { left, top, width, height } = card.getBoundingClientRect();
+    const x = e.clientX - left;
+    const y = e.clientY - top;
+    const rotateX = ((y - height / 2) / (height / 2)) * -6;
+    const rotateY = ((x - width / 2) / (width / 2)) * 6;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+    card.style.transition = 'transform 0.1s ease-out';
+  };
+  const handleMouseLeave = (e) => {
+    e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    e.currentTarget.style.transition = 'transform 0.4s ease-in-out';
+  };
+  return { handleMouseMove, handleMouseLeave };
+}
+
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Advertisers", href: "/advertisers" },
@@ -62,6 +96,97 @@ const FAQS = [
   { q: "What affiliate networks are you connected to?", a: "We currently integrate with Awin and Impact — two of the world's leading affiliate networks. This provides access to thousands of vetted merchant programmes across retail, technology, finance, health, and travel sectors." },
   { q: "How do you protect against fraud?", a: "Our platform employs continuous monitoring of all tracking data to detect and eliminate artificial clicks, duplicate actions, and non-compliant promotional methods. Every publisher is screened before gaining access, and all activity is monitored throughout the campaign lifecycle." },
 ];
+
+// ─── PARTICLES BACKGROUND ─────────────────────────────────────────────────────
+function ParticlesBackground() {
+  const initParticles = useCallback(() => {
+    const oldCanvas = document.querySelector('#particles-bg canvas');
+    if (oldCanvas) oldCanvas.remove();
+
+    if (window.pJSDom?.length > 0) {
+      window.pJSDom.forEach((p) => p.pJS.fn.vendors.destroypJS());
+      window.pJSDom = [];
+    }
+
+    window.particlesJS('particles-bg', {
+      particles: {
+        number: { value: 100, density: { enable: true, value_area: 900 } },
+        color: { value: '#2563eb' },
+        shape: { type: 'circle', stroke: { width: 0.5, color: '#3b82f6' } },
+        opacity: {
+          value: 0.4,
+          random: true,
+          anim: { enable: true, speed: 1, opacity_min: 0.1 },
+        },
+        size: {
+          value: 2.5,
+          random: true,
+          anim: { enable: true, speed: 2, size_min: 0.5 },
+        },
+        line_linked: {
+          enable: true,
+          distance: 160,
+          color: '#2563eb',
+          opacity: 0.15,
+          width: 1,
+        },
+        move: { enable: true, speed: 1.5, random: true, out_mode: 'bounce' },
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: {
+          onhover: { enable: true, mode: 'grab' },
+          onclick: { enable: true, mode: 'push' },
+          resize: true,
+        },
+        modes: {
+          grab: { distance: 220, line_linked: { opacity: 0.6 } },
+          push: { particles_nb: 4 },
+          repulse: { distance: 180, duration: 0.4 },
+        },
+      },
+      retina_detect: true,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const tryInit = () => {
+      if (window.particlesJS) {
+        initParticles();
+      }
+    };
+
+    const existingScript = document.getElementById('particles-script');
+    if (existingScript) {
+      tryInit();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = 'particles-script';
+    script.src = 'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+    script.onload = () => initParticles();
+  }, [initParticles]);
+
+  return (
+    <div
+      id="particles-bg"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 0,
+        background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 40%, #e8f4fd 70%, #f0fdf4 100%)',
+      }}
+    />
+  );
+}
 
 // ─── ANNOUNCEMENT BAR ─────────────────────────────────────────────────────────
 function AnnouncementBar() {
@@ -430,8 +555,8 @@ function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <Link to="https://app.linktrackify.com/login" className="text-sm font-medium text-gray-700 hover:text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200 hover:-translate-y-0.5">Log in</Link>
-            <Link to="https://app.linktrackify.com/register" className="text-sm font-semibold text-white bg-blue-600 px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200">
+            <Link to="https://app.linktrackify.com/login" className="shiny-btn shiny-btn-outline">Log in</Link>
+            <Link to="https://app.linktrackify.com/register" className="shiny-btn">
               Get Started
             </Link>
           </div>
@@ -449,8 +574,8 @@ function Navbar() {
               <Link key={l.label} to={l.href} className={`block px-4 py-2.5 text-sm rounded-lg font-medium transition-all duration-200 ${location.pathname === l.href ? "text-blue-600 bg-blue-50" : "text-gray-700 hover:bg-gray-50"}`}>{l.label}</Link>
             ))}
             <div className="pt-3 flex flex-col gap-2 px-2">
-              <Link to="https://app.linktrackify.com/login" className="text-center text-sm font-medium text-gray-700 border border-gray-200 py-2.5 rounded-lg hover:bg-gray-50 transition-all">Log in</Link>
-              <Link to="https://app.linktrackify.com/register" className="text-center text-sm font-semibold text-white bg-blue-600 py-2.5 rounded-lg hover:bg-blue-700 transition-all">Get Started</Link>
+              <Link to="https://app.linktrackify.com/login" className="shiny-btn shiny-btn-outline">Log in</Link>
+              <Link to="https://app.linktrackify.com/register" className="shiny-btn">Get Started</Link>
             </div>
           </motion.div>
         )}
@@ -468,7 +593,8 @@ function Hero() {
       <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-50 rounded-full blur-3xl opacity-30 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative">
-        <div className="max-w-3xl mx-auto text-center mb-14">
+        <div className="grid lg:grid-cols-2 gap-12 items-center mb-14">
+          <div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6 border border-blue-100">
             <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
@@ -505,42 +631,55 @@ function Hero() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
             <Link to="https://app.linktrackify.com/register"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-all shadow-md shadow-blue-100 text-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200">
+              className="shiny-btn">
               Launch as Advertiser
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </Link>
             <Link to="https://app.linktrackify.com/register"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-gray-700 font-semibold px-7 py-3.5 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all text-sm">
+              className="shiny-btn shiny-btn-outline">
               Apply as Publisher
             </Link>
           </motion.div>
+          </div>
 
-          
-
-          {/* Network marquee ticker */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.6 }}
-            className="mt-12">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-5 text-center">Why Performance Marketers Choose Linktrackify</p>
-            <div className="overflow-hidden w-full relative border-y border-gray-200 py-5 bg-gray-50">
+          {/* Right side image */}
+          <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.8 }}
+            className="hidden lg:block relative">
+            <div className="relative rounded-[32px] overflow-hidden shadow-2xl shadow-blue-100">
+              <img
+                src="/images/hero-homepage.jpg"
+                alt="Performance Affiliate Marketing"
+                className="w-full h-[520px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 to-transparent" />
               
-              <div className="marquee-track">
-                {[
-                "Pure CPA Model", "Zero Upfront Risk", "Real-Time Tracking",
-                "Verified Publishers Only", "Fraud Protection", "Transparent Payouts",
-                "Brand Safety Guaranteed", "Performance First", "Compliance First",
-                "Pure CPA Model", "Zero Upfront Risk", "Real-Time Tracking",
-                "Verified Publishers Only", "Fraud Protection", "Transparent Payouts",
-                "Brand Safety Guaranteed", "Performance First", "Compliance First",
-              ].map((text, i) => (
-                <div key={i} className="flex items-center shrink-0">
-                  <span className="text-xs font-bold text-gray-700 whitespace-nowrap tracking-widest uppercase px-8">{text}</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
-                </div>
-              ))}
-              </div>
             </div>
+            
           </motion.div>
         </div>
+
+        {/* Network marquee ticker */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.6 }}
+          className="mt-12">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-5 text-center">Why Performance Marketers Choose Linktrackify</p>
+          <div className="overflow-hidden w-full relative border-y border-gray-200 py-5 bg-gray-50">
+            <div className="marquee-track">
+              {[
+              "Pure CPA Model", "Zero Upfront Risk", "Real-Time Tracking",
+              "Verified Publishers Only", "Fraud Protection", "Transparent Payouts",
+              "Brand Safety Guaranteed", "Performance First", "Compliance First",
+              "Pure CPA Model", "Zero Upfront Risk", "Real-Time Tracking",
+              "Verified Publishers Only", "Fraud Protection", "Transparent Payouts",
+              "Brand Safety Guaranteed", "Performance First", "Compliance First",
+            ].map((text, i) => (
+              <div key={i} className="flex items-center shrink-0">
+                <span className="text-xs font-bold text-gray-700 whitespace-nowrap tracking-widest uppercase px-8">{text}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+              </div>
+            ))}
+            </div>
+          </div>
+        </motion.div>
 
         {/* Interactive App Showcase */}
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.7 }}
@@ -554,6 +693,7 @@ function Hero() {
 
 // ─── HOW IT WORKS ─────────────────────────────────────────────────────────────
 function HowItWorks() {
+  const { handleMouseMove, handleMouseLeave } = useTiltEffect();
   const steps = [
     {
       number: "01",
@@ -579,7 +719,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 px-6 lg:px-8 bg-gray-50">
+    <section id="how-it-works" className="py-24 px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <AnimateOnScroll className="text-center mb-16">
           <p className="inline-block text-blue-600 text-xs font-bold uppercase tracking-widest mb-4 bg-blue-50 border border-blue-100 px-4 py-1.5 rounded-full">How It Works</p>
@@ -592,7 +732,10 @@ function HowItWorks() {
           <div className="hidden md:block absolute top-12 left-[38%] right-[38%] h-0.5 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 z-0" />
           {steps.map((step) => (
             <motion.div key={step.number} variants={cardVariant}
-              className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 z-10">
+              className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 z-10 glow-card"
+              onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+              <div className="shine-overlay" />
+              <div className="shine-border" />
               <div className="flex items-center justify-between mb-6">
                 <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-100">{step.icon}</div>
                 <span className="text-4xl font-black text-gray-100">{step.number}</span>
@@ -610,6 +753,7 @@ function HowItWorks() {
 
 // ─── TRAFFIC CHANNELS ─────────────────────────────────────────────────────────
 function Features() {
+  const { handleMouseMove, handleMouseLeave } = useTiltEffect();
   const channels = [
     {
       title: "Content Creators & Review Sites",
@@ -638,7 +782,7 @@ function Features() {
   ];
 
   return (
-    <section id="features" className="py-24 px-6 lg:px-8 bg-white">
+    <section id="features" className="py-24 px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <AnimateOnScroll className="text-center mb-16">
           <p className="inline-block text-blue-600 text-xs font-bold uppercase tracking-widest mb-4 bg-blue-50 border border-blue-100 px-4 py-1.5 rounded-full">Traffic Channels</p>
@@ -650,7 +794,10 @@ function Features() {
           className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {channels.map((c) => (
             <motion.div key={c.title} variants={cardVariant}
-              className="group p-7 rounded-[28px] border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all bg-white hover:-translate-y-1">
+              className="group p-7 rounded-[28px] border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all bg-white hover:-translate-y-1 glow-card"
+              onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+              <div className="shine-overlay" />
+              <div className="shine-border" />
               <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${c.color}`}>{c.icon}</div>
               <h3 className="font-bold text-gray-900 mb-3 text-base leading-tight">{c.title}</h3>
               <p className="text-sm text-gray-500 leading-relaxed">{c.desc}</p>
@@ -664,6 +811,7 @@ function Features() {
 
 // ─── INDUSTRIES ───────────────────────────────────────────────────────────────
 function EarningsFlow() {
+  const { handleMouseMove, handleMouseLeave } = useTiltEffect();
   const industries = [
     {
       title: "Retail & E-Commerce",
@@ -698,7 +846,7 @@ function EarningsFlow() {
   ];
 
   return (
-    <section className="py-24 px-6 lg:px-8 bg-gray-50">
+    <section className="py-24 px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <AnimateOnScroll className="text-center mb-16">
           <p className="inline-block text-blue-600 text-xs font-bold uppercase tracking-widest mb-4 bg-blue-50 border border-blue-100 px-4 py-1.5 rounded-full">Industries We Serve</p>
@@ -710,7 +858,10 @@ function EarningsFlow() {
           className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {industries.map((ind) => (
             <motion.div key={ind.title} variants={cardVariant}
-              className="flex gap-4 p-6 bg-white rounded-[24px] border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all hover:-translate-y-0.5">
+              className="flex gap-4 p-6 bg-white rounded-[24px] border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all hover:-translate-y-0.5 glow-card"
+              onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+              <div className="shine-overlay" />
+              <div className="shine-border" />
               <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">{ind.icon}</div>
               <div>
                 <h3 className="font-bold text-gray-900 mb-1.5 text-sm">{ind.title}</h3>
@@ -726,6 +877,7 @@ function EarningsFlow() {
 
 // ─── COMPLIANCE ───────────────────────────────────────────────────────────────
 function PublishersSection() {
+  const { handleMouseMove, handleMouseLeave } = useTiltEffect();
   const complianceFeatures = [
     {
       title: "In-Depth Screening Protocol",
@@ -745,7 +897,7 @@ function PublishersSection() {
   ];
 
   return (
-    <section className="py-24 px-6 lg:px-8 bg-white">
+    <section className="py-24 px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <AnimateOnScroll className="text-center mb-16">
           <p className="inline-block text-blue-600 text-xs font-bold uppercase tracking-widest mb-4 bg-blue-50 border border-blue-100 px-4 py-1.5 rounded-full">Compliance & Brand Safety</p>
@@ -757,7 +909,9 @@ function PublishersSection() {
           <AnimateOnScroll variants={slideLeft}>
             <div className="space-y-6">
               {complianceFeatures.map((f) => (
-                <div key={f.title} className="flex gap-5 p-7 bg-gray-50 rounded-[28px] border border-gray-100 hover:border-blue-100 hover:bg-blue-50/30 transition-all">
+                <div key={f.title} className="flex gap-5 p-7 bg-gray-50 rounded-[28px] border border-gray-100 hover:border-blue-100 hover:bg-blue-50/30 transition-all glow-card" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+                  <div className="shine-overlay" />
+                  <div className="shine-border" />
                   <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm shadow-blue-200">{f.icon}</div>
                   <div>
                     <h3 className="font-bold text-gray-900 mb-1.5">{f.title}</h3>
@@ -800,6 +954,7 @@ function PublishersSection() {
 
 // ─── DUAL VALUE PROPOSITION ───────────────────────────────────────────────────
 function AdvertisersSection() {
+  const { handleMouseMove, handleMouseLeave } = useTiltEffect();
   return (
     <section id="advertisers" className="py-24 px-6 lg:px-8 bg-slate-900">
       <div className="max-w-7xl mx-auto">
@@ -811,7 +966,9 @@ function AdvertisersSection() {
 
         <div className="grid lg:grid-cols-2 gap-8">
           <AnimateOnScroll variants={slideLeft}>
-            <div className="bg-slate-800 rounded-[32px] p-8 border border-slate-700 h-full flex flex-col">
+            <div className="bg-slate-800 rounded-[32px] p-8 border border-slate-700 h-full flex flex-col glow-card" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+              <div className="shine-overlay" />
+              <div className="shine-border" />
               <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-blue-900">
                 <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
               </div>
@@ -831,7 +988,7 @@ function AdvertisersSection() {
                   </li>
                 ))}
               </ul>
-              <Link to="/advertisers" className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all text-sm hover:-translate-y-0.5 shadow-md shadow-blue-900 w-fit">
+              <Link to="/advertisers" className="shiny-btn">
                 Partner as an Advertiser
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </Link>
@@ -839,7 +996,9 @@ function AdvertisersSection() {
           </AnimateOnScroll>
 
           <AnimateOnScroll variants={slideRight}>
-            <div className="bg-slate-800 rounded-[32px] p-8 border border-slate-700 h-full flex flex-col">
+            <div className="bg-slate-800 rounded-[32px] p-8 border border-slate-700 h-full flex flex-col glow-card" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+              <div className="shine-overlay" />
+              <div className="shine-border" />
               <div className="w-12 h-12 bg-emerald-600 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-emerald-900">
                 <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
               </div>
@@ -859,7 +1018,7 @@ function AdvertisersSection() {
                   </li>
                 ))}
               </ul>
-              <Link to="https://app.linktrackify.com/register" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl transition-all text-sm hover:-translate-y-0.5 shadow-md shadow-emerald-900 w-fit">
+              <Link to="https://app.linktrackify.com/register" className="shiny-btn shiny-btn-emerald">
                 Apply as a Publisher
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </Link>
@@ -875,7 +1034,7 @@ function AdvertisersSection() {
 function FAQ() {
   const [open, setOpen] = useState(null);
   return (
-    <section className="py-24 px-6 lg:px-8 bg-white">
+    <section className="py-24 px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <AnimateOnScroll className="text-center mb-14">
           <p className="inline-block text-blue-600 text-xs font-bold uppercase tracking-widest mb-4 bg-blue-50 border border-blue-100 px-4 py-1.5 rounded-full">FAQ</p>
@@ -910,7 +1069,7 @@ function FAQ() {
 // ─── CTA ──────────────────────────────────────────────────────────────────────
 function CTA() {
   return (
-    <section className="py-24 px-6 lg:px-8 bg-white">
+    <section className="py-24 px-6 lg:px-8">
       <AnimateOnScroll>
         <div className="max-w-4xl mx-auto text-center bg-gradient-to-br from-blue-600 to-blue-800 rounded-[40px] p-16 shadow-2xl shadow-blue-100 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.15),transparent)]" />
@@ -919,11 +1078,11 @@ function CTA() {
             <h2 className="text-5xl lg:text-6xl font-bold text-white tracking-tight mb-5">Ready to Align Performance with Growth?</h2>
             <p className="text-blue-100 text-lg mb-10 max-w-xl mx-auto leading-relaxed">Contact our partnership management team today to review your programme goals, or submit your publisher application to get started immediately.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/contact-us" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-blue-700 font-bold px-8 py-4 rounded-xl transition-all shadow-md text-sm hover:-translate-y-0.5 hover:shadow-lg">
+              <Link to="/contact-us" className="shiny-btn">
                 Get in Touch
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </Link>
-              <Link to="https://app.linktrackify.com/register" className="w-full sm:w-auto inline-flex items-center justify-center text-blue-100 hover:text-white font-semibold px-8 py-4 rounded-xl border border-blue-400 hover:border-blue-200 transition-all text-sm">
+              <Link to="https://app.linktrackify.com/register" className="shiny-btn shiny-btn-outline">
                 Create Account
               </Link>
             </div>
@@ -1020,10 +1179,13 @@ function HomePage() {
 const NO_LAYOUT_PAGES = ['/login', '/forgot-password', '/register', '/publisher/register', '/advertiser/register', '/terms', '/registration-success'];
 
 export default function App() {
+  useGlowCards();
   const location = useLocation();
   const hideLayout = NO_LAYOUT_PAGES.includes(location.pathname);
   return (
-    <div className="font-sans antialiased">
+    <div className="font-sans antialiased" style={{ position: 'relative' }}>
+      <ParticlesBackground />
+      <div style={{ position: 'relative', zIndex: 1 }}>
       {!hideLayout && <AnnouncementBar />}
       {!hideLayout && <Navbar />}
       <Routes>
@@ -1041,6 +1203,7 @@ export default function App() {
         <Route path="/registration-success" element={<RegistrationSuccess />} />
       </Routes>
       {!hideLayout && <Footer />}
+      </div>
     </div>
   );
 }

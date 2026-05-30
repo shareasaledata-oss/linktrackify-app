@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
@@ -145,6 +145,67 @@ function AdvertiserForm({ onClose }) {
   );
 }
 
+function ParticlesBackground() {
+  const initParticles = useCallback(() => {
+    const oldCanvas = document.querySelector('#particles-bg canvas');
+    if (oldCanvas) oldCanvas.remove();
+    if (window.pJSDom?.length > 0) {
+      window.pJSDom.forEach((p) => p.pJS.fn.vendors.destroypJS());
+      window.pJSDom = [];
+    }
+    window.particlesJS('particles-bg', {
+      particles: {
+        number: { value: 100, density: { enable: true, value_area: 900 } },
+        color: { value: '#2563eb' },
+        shape: { type: 'circle', stroke: { width: 0.5, color: '#3b82f6' } },
+        opacity: { value: 0.4, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1 } },
+        size: { value: 2.5, random: true, anim: { enable: true, speed: 2, size_min: 0.5 } },
+        line_linked: { enable: true, distance: 160, color: '#2563eb', opacity: 0.15, width: 1 },
+        move: { enable: true, speed: 1.5, random: true, out_mode: 'bounce' },
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
+        modes: { grab: { distance: 220, line_linked: { opacity: 0.6 } }, push: { particles_nb: 4 } },
+      },
+      retina_detect: true,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const existingScript = document.getElementById('particles-script');
+    if (existingScript) {
+      if (window.particlesJS) initParticles();
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'particles-script';
+    script.src = 'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+    script.onload = () => initParticles();
+    return () => {
+      const oldCanvas = document.querySelector('#particles-bg canvas');
+      if (oldCanvas) oldCanvas.remove();
+      if (window.pJSDom?.length > 0) {
+        window.pJSDom.forEach((p) => p.pJS.fn.vendors.destroypJS());
+        window.pJSDom = [];
+      }
+    };
+  }, [initParticles]);
+
+  return (
+    <div
+      id="particles-bg"
+      style={{
+        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0,
+        background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 40%, #e8f4fd 70%, #f0fdf4 100%)',
+      }}
+    />
+  );
+}
+
 export default function Advertisers() {
   const [showForm, setShowForm] = useState(false);
 
@@ -221,8 +282,24 @@ export default function Advertisers() {
     },
   ];
 
+  const handleTiltMove = (e) => {
+    const card = e.currentTarget;
+    const { left, top, width, height } = card.getBoundingClientRect();
+    const x = e.clientX - left;
+    const y = e.clientY - top;
+    const rotateX = ((y - height / 2) / (height / 2)) * -6;
+    const rotateY = ((x - width / 2) / (width / 2)) * 6;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+    card.style.transition = 'transform 0.1s ease-out';
+  };
+
+  const handleTiltLeave = (e) => {
+    e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    e.currentTarget.style.transition = 'transform 0.4s ease-in-out';
+  };
+
   return (
-    <div className="pt-16">
+    <div className="pt-16" style={{ position: 'relative', zIndex: 1 }}>
 
       {/* Modal Form */}
       {showForm && (
@@ -242,7 +319,7 @@ export default function Advertisers() {
       )}
 
       {/* ── HERO ── */}
-      <section className="py-24 px-6 lg:px-8 bg-white relative overflow-hidden">
+      <section className="py-24 px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(59,130,246,0.08),transparent)]" />
         <div className="absolute top-20 right-0 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-40 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-50 rounded-full blur-3xl opacity-30 pointer-events-none" />
@@ -269,12 +346,12 @@ export default function Advertisers() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button onClick={() => setShowForm(true)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-all shadow-md shadow-blue-100 text-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200">
+                className="shiny-btn">
                 Launch Your Programme
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </button>
               <Link to="/contact-us"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-gray-700 font-semibold px-7 py-3.5 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all text-sm">
+                className="shiny-btn shiny-btn-outline">
                 Speak with a Partner Manager
               </Link>
             </motion.div>
@@ -283,7 +360,7 @@ export default function Advertisers() {
       </section>
 
       {/* ── INCREMENTALITY PROMISE ── */}
-      <section className="py-24 px-6 lg:px-8 bg-gray-50">
+      <section className="py-24 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <AnimateOnScroll className="text-center mb-16">
             <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">The Core Philosophy</p>
@@ -292,7 +369,9 @@ export default function Advertisers() {
 
           <div className="grid lg:grid-cols-2 gap-8">
             <AnimateOnScroll variants={slideLeft}>
-              <div className="bg-white rounded-3xl p-10 border border-gray-100 shadow-sm h-full">
+              <div className="bg-white rounded-3xl p-10 border border-gray-100 shadow-sm h-full glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
                   <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
                 </div>
@@ -302,7 +381,9 @@ export default function Advertisers() {
             </AnimateOnScroll>
 
             <AnimateOnScroll variants={slideRight}>
-              <div className="bg-white rounded-3xl p-10 border border-gray-100 shadow-sm h-full">
+              <div className="bg-white rounded-3xl p-10 border border-gray-100 shadow-sm h-full glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6">
                   <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" /></svg>
                 </div>
@@ -315,7 +396,7 @@ export default function Advertisers() {
       </section>
 
       {/* ── SERVICES ── */}
-      <section className="py-24 px-6 lg:px-8 bg-white">
+      <section className="py-24 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <AnimateOnScroll className="text-center mb-16">
             <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">What We Handle For You</p>
@@ -327,7 +408,9 @@ export default function Advertisers() {
             className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((s) => (
               <motion.div key={s.title} variants={cardVariant}
-                className="group p-6 rounded-2xl border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all bg-white hover:-translate-y-1">
+                className="group p-6 rounded-2xl border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all bg-white hover:-translate-y-1 glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${s.color}`}>{s.icon}</div>
                 <h3 className="font-bold text-gray-900 mb-3 text-base leading-tight">{s.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{s.desc}</p>
@@ -350,7 +433,9 @@ export default function Advertisers() {
             className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {pillars.map((p) => (
               <motion.div key={p.title} variants={cardVariant}
-                className="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-blue-500/30 transition-all hover:-translate-y-1">
+                className="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-blue-500/30 transition-all hover:-translate-y-1 glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <div className="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-xl flex items-center justify-center mb-5">{p.icon}</div>
                 <h3 className="font-bold text-white mb-3 text-base">{p.title}</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">{p.desc}</p>
@@ -361,7 +446,7 @@ export default function Advertisers() {
       </section>
 
       {/* ── ONBOARDING STEPS ── */}
-      <section className="py-24 px-6 lg:px-8 bg-white">
+      <section className="py-24 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <AnimateOnScroll className="text-center mb-16">
             <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">How Onboarding Works</p>
@@ -374,7 +459,9 @@ export default function Advertisers() {
             <div className="hidden lg:block absolute top-12 left-[12%] right-[12%] h-0.5 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 z-0" />
             {steps.map((step) => (
               <motion.div key={step.number} variants={cardVariant}
-                className="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 z-10">
+                className="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 z-10 glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <div className="flex items-center justify-between mb-5">
                   <div className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center font-bold text-sm">{step.number}</div>
                   <span className="text-3xl font-black text-gray-100">{step.number}</span>
@@ -388,9 +475,11 @@ export default function Advertisers() {
       </section>
 
       {/* ── BOTTOM CTA ── */}
-      <section className="py-24 px-6 lg:px-8 bg-gray-50">
+      <section className="py-24 px-6 lg:px-8">
         <AnimateOnScroll>
-          <div className="max-w-4xl mx-auto text-center bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-16 shadow-2xl shadow-blue-100 relative overflow-hidden">
+          <div className="max-w-4xl mx-auto text-center bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-16 shadow-2xl shadow-blue-100 relative overflow-hidden glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+            <div className="shine-overlay" />
+            <div className="shine-border" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.15),transparent)]" />
             <div className="relative">
               <p className="text-blue-200 text-sm font-semibold uppercase tracking-widest mb-4">Ready to Scale</p>
@@ -398,12 +487,12 @@ export default function Advertisers() {
               <p className="text-blue-100 text-lg mb-10 max-w-xl mx-auto leading-relaxed">Let's protect your ad budget and accelerate your sales pipeline together. Get in touch with our partnership management team today to build your customised performance strategy.</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <button onClick={() => setShowForm(true)}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-blue-700 font-bold px-8 py-4 rounded-xl transition-all shadow-md text-sm hover:-translate-y-0.5 hover:shadow-lg">
+                  className="shiny-btn">
                   Apply as an Advertiser
                   <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </button>
                 <Link to="/contact-us"
-                  className="w-full sm:w-auto inline-flex items-center justify-center text-blue-100 hover:text-white font-semibold px-8 py-4 rounded-xl border border-blue-400 hover:border-blue-200 transition-all text-sm">
+                  className="shiny-btn shiny-btn-outline">
                   Schedule a Strategic Consultation
                 </Link>
               </div>

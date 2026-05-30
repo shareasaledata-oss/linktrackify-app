@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
@@ -192,6 +192,67 @@ function PublisherForm() {
   );
 }
 
+function ParticlesBackground() {
+  const initParticles = useCallback(() => {
+    const oldCanvas = document.querySelector('#particles-bg canvas');
+    if (oldCanvas) oldCanvas.remove();
+    if (window.pJSDom?.length > 0) {
+      window.pJSDom.forEach((p) => p.pJS.fn.vendors.destroypJS());
+      window.pJSDom = [];
+    }
+    window.particlesJS('particles-bg', {
+      particles: {
+        number: { value: 100, density: { enable: true, value_area: 900 } },
+        color: { value: '#2563eb' },
+        shape: { type: 'circle', stroke: { width: 0.5, color: '#3b82f6' } },
+        opacity: { value: 0.4, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1 } },
+        size: { value: 2.5, random: true, anim: { enable: true, speed: 2, size_min: 0.5 } },
+        line_linked: { enable: true, distance: 160, color: '#2563eb', opacity: 0.15, width: 1 },
+        move: { enable: true, speed: 1.5, random: true, out_mode: 'bounce' },
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
+        modes: { grab: { distance: 220, line_linked: { opacity: 0.6 } }, push: { particles_nb: 4 } },
+      },
+      retina_detect: true,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const existingScript = document.getElementById('particles-script');
+    if (existingScript) {
+      if (window.particlesJS) initParticles();
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'particles-script';
+    script.src = 'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+    script.onload = () => initParticles();
+    return () => {
+      const oldCanvas = document.querySelector('#particles-bg canvas');
+      if (oldCanvas) oldCanvas.remove();
+      if (window.pJSDom?.length > 0) {
+        window.pJSDom.forEach((p) => p.pJS.fn.vendors.destroypJS());
+        window.pJSDom = [];
+      }
+    };
+  }, [initParticles]);
+
+  return (
+    <div
+      id="particles-bg"
+      style={{
+        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0,
+        background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 40%, #e8f4fd 70%, #f0fdf4 100%)',
+      }}
+    />
+  );
+}
+
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 export default function ContactUs() {
   const [activeTab, setActiveTab] = useState("advertiser");
@@ -226,11 +287,27 @@ export default function ContactUs() {
     },
   ];
 
+  const handleTiltMove = (e) => {
+    const card = e.currentTarget;
+    const { left, top, width, height } = card.getBoundingClientRect();
+    const x = e.clientX - left;
+    const y = e.clientY - top;
+    const rotateX = ((y - height / 2) / (height / 2)) * -6;
+    const rotateY = ((x - width / 2) / (width / 2)) * 6;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+    card.style.transition = 'transform 0.1s ease-out';
+  };
+
+  const handleTiltLeave = (e) => {
+    e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    e.currentTarget.style.transition = 'transform 0.4s ease-in-out';
+  };
+
   return (
-    <div className="pt-16">
+    <div className="pt-16" style={{ position: 'relative', zIndex: 1 }}>
 
       {/* ── HERO ── */}
-      <section className="py-24 px-6 lg:px-8 bg-white relative overflow-hidden">
+      <section className="py-24 px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(59,130,246,0.08),transparent)]" />
         <div className="absolute top-20 right-0 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-40 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-50 rounded-full blur-3xl opacity-30 pointer-events-none" />
@@ -258,7 +335,7 @@ export default function ContactUs() {
       </section>
 
       {/* ── TABBED FORMS ── */}
-      <section className="py-24 px-6 lg:px-8 bg-gray-50">
+      <section className="py-24 px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
 
           {/* Tab switcher */}
@@ -294,7 +371,7 @@ export default function ContactUs() {
       </section>
 
       {/* ── DEPARTMENTAL INBOXES ── */}
-      <section className="py-24 px-6 lg:px-8 bg-white">
+      <section className="py-24 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <AnimateOnScroll className="text-center mb-16">
             <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Direct Contact</p>
@@ -306,7 +383,9 @@ export default function ContactUs() {
             className="grid md:grid-cols-3 gap-6">
             {departments.map((dept) => (
               <motion.div key={dept.title} variants={cardVariant}
-                className={`bg-white rounded-2xl p-8 border ${dept.border} shadow-sm hover:shadow-md transition-all hover:-translate-y-1`}>
+                className={`bg-white rounded-2xl p-8 border ${dept.border} shadow-sm hover:shadow-md transition-all hover:-translate-y-1 glow-card`} onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 ${dept.color}`}>{dept.icon}</div>
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">{dept.subtitle}</p>
                 <h3 className="font-bold text-gray-900 mb-3 text-lg">{dept.title}</h3>
@@ -323,7 +402,7 @@ export default function ContactUs() {
       </section>
 
       {/* ── SLA MATRIX ── */}
-      <section className="py-24 px-6 lg:px-8 bg-gray-50">
+      <section className="py-24 px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <AnimateOnScroll className="text-center mb-12">
             <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Service Levels</p>
@@ -331,7 +410,9 @@ export default function ContactUs() {
           </AnimateOnScroll>
 
           <AnimateOnScroll>
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+              <div className="shine-overlay" />
+              <div className="shine-border" />
               {/* Header */}
               <div className="px-8 py-6 bg-gradient-to-r from-blue-600 to-blue-700">
                 <div className="flex items-start gap-4">
@@ -393,7 +474,7 @@ export default function ContactUs() {
       </section>
 
       {/* ── COMPANY INFO ── */}
-      <section className="py-16 px-6 lg:px-8 bg-white">
+      <section className="py-16 px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <AnimateOnScroll>
             <div className="grid sm:grid-cols-3 gap-6 text-center">
@@ -414,7 +495,9 @@ export default function ContactUs() {
                   value: "Linktrackify Ltd",
                 },
               ].map((item) => (
-                <div key={item.label} className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                <div key={item.label} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                  <div className="shine-overlay" />
+                  <div className="shine-border" />
                   <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">{item.icon}</div>
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">{item.label}</p>
                   <p className="text-sm font-medium text-gray-700">{item.value}</p>
@@ -426,17 +509,19 @@ export default function ContactUs() {
       </section>
 
       {/* ── FOOTER GATEWAYS ── */}
-      <section className="py-16 px-6 lg:px-8 bg-gray-50 border-t border-gray-100">
+      <section className="py-16 px-6 lg:px-8 border-t border-gray-100">
         <div className="max-w-4xl mx-auto">
           <div className="grid sm:grid-cols-2 gap-6">
             <AnimateOnScroll>
-              <div className="bg-white rounded-2xl p-6 border border-blue-100 flex items-center justify-between gap-4 hover:shadow-md transition-all hover:-translate-y-0.5">
+              <div className="bg-white rounded-2xl p-6 border border-blue-100 flex items-center justify-between gap-4 hover:shadow-md transition-all hover:-translate-y-0.5 glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <div>
                   <p className="text-xs font-semibold text-blue-600 uppercase tracking-widest mb-1">For Advertisers</p>
                   <p className="text-sm text-gray-600">Ready to deploy a risk-free campaign right now?</p>
                 </div>
                 <Link to="/advertisers"
-                  className="flex-shrink-0 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2.5 rounded-xl transition-all text-sm">
+                  className="shiny-btn">
                   Launch as Advertiser
                   <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </Link>
@@ -444,13 +529,15 @@ export default function ContactUs() {
             </AnimateOnScroll>
 
             <AnimateOnScroll>
-              <div className="bg-white rounded-2xl p-6 border border-emerald-100 flex items-center justify-between gap-4 hover:shadow-md transition-all hover:-translate-y-0.5">
+              <div className="bg-white rounded-2xl p-6 border border-emerald-100 flex items-center justify-between gap-4 hover:shadow-md transition-all hover:-translate-y-0.5 glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <div>
                   <p className="text-xs font-semibold text-emerald-600 uppercase tracking-widest mb-1">For Publishers</p>
                   <p className="text-sm text-gray-600">Looking to access premium performance offers?</p>
                 </div>
                 <Link to="/publishers"
-                  className="flex-shrink-0 inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2.5 rounded-xl transition-all text-sm">
+                  className="shiny-btn shiny-btn-emerald">
                   Apply as Publisher
                   <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </Link>

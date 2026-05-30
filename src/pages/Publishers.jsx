@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
@@ -166,6 +166,67 @@ function PublisherForm({ onClose }) {
   );
 }
 
+function ParticlesBackground() {
+  const initParticles = useCallback(() => {
+    const oldCanvas = document.querySelector('#particles-bg canvas');
+    if (oldCanvas) oldCanvas.remove();
+    if (window.pJSDom?.length > 0) {
+      window.pJSDom.forEach((p) => p.pJS.fn.vendors.destroypJS());
+      window.pJSDom = [];
+    }
+    window.particlesJS('particles-bg', {
+      particles: {
+        number: { value: 100, density: { enable: true, value_area: 900 } },
+        color: { value: '#2563eb' },
+        shape: { type: 'circle', stroke: { width: 0.5, color: '#3b82f6' } },
+        opacity: { value: 0.4, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1 } },
+        size: { value: 2.5, random: true, anim: { enable: true, speed: 2, size_min: 0.5 } },
+        line_linked: { enable: true, distance: 160, color: '#2563eb', opacity: 0.15, width: 1 },
+        move: { enable: true, speed: 1.5, random: true, out_mode: 'bounce' },
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
+        modes: { grab: { distance: 220, line_linked: { opacity: 0.6 } }, push: { particles_nb: 4 } },
+      },
+      retina_detect: true,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const existingScript = document.getElementById('particles-script');
+    if (existingScript) {
+      if (window.particlesJS) initParticles();
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'particles-script';
+    script.src = 'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js';
+    script.async = true;
+    document.body.appendChild(script);
+    script.onload = () => initParticles();
+    return () => {
+      const oldCanvas = document.querySelector('#particles-bg canvas');
+      if (oldCanvas) oldCanvas.remove();
+      if (window.pJSDom?.length > 0) {
+        window.pJSDom.forEach((p) => p.pJS.fn.vendors.destroypJS());
+        window.pJSDom = [];
+      }
+    };
+  }, [initParticles]);
+
+  return (
+    <div
+      id="particles-bg"
+      style={{
+        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0,
+        background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 40%, #e8f4fd 70%, #f0fdf4 100%)',
+      }}
+    />
+  );
+}
+
 export default function Publishers() {
   const [showForm, setShowForm] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
@@ -261,8 +322,24 @@ export default function Publishers() {
     { q: "What compliance rules must I follow?", a: "All publishers must adhere to our compliance guidelines, which include no trademark bidding (TM+) without explicit written approval, exclusive use of authorised promotional materials, transparent traffic source disclosure, and zero tolerance for incentivised or artificial traffic methods." },
   ];
 
+  const handleTiltMove = (e) => {
+    const card = e.currentTarget;
+    const { left, top, width, height } = card.getBoundingClientRect();
+    const x = e.clientX - left;
+    const y = e.clientY - top;
+    const rotateX = ((y - height / 2) / (height / 2)) * -6;
+    const rotateY = ((x - width / 2) / (width / 2)) * 6;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+    card.style.transition = 'transform 0.1s ease-out';
+  };
+
+  const handleTiltLeave = (e) => {
+    e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    e.currentTarget.style.transition = 'transform 0.4s ease-in-out';
+  };
+
   return (
-    <div className="pt-16">
+    <div className="pt-16" style={{ position: 'relative', zIndex: 1 }}>
 
       {/* Modal Form */}
       {showForm && (
@@ -282,7 +359,7 @@ export default function Publishers() {
       )}
 
       {/* ── HERO ── */}
-      <section className="py-24 px-6 lg:px-8 bg-white relative overflow-hidden">
+      <section className="py-24 px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(59,130,246,0.08),transparent)]" />
         <div className="absolute top-20 right-0 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-40 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-50 rounded-full blur-3xl opacity-30 pointer-events-none" />
@@ -309,12 +386,12 @@ export default function Publishers() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button onClick={() => setShowForm(true)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-all shadow-md shadow-blue-100 text-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-200">
+                className="shiny-btn">
                 Apply as a Publisher
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </button>
               <Link to="/contact-us"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-gray-700 font-semibold px-7 py-3.5 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all text-sm">
+                className="shiny-btn shiny-btn-outline">
                 Review Compliance Guidelines
               </Link>
             </motion.div>
@@ -323,7 +400,7 @@ export default function Publishers() {
       </section>
 
       {/* ── CORE BENEFITS ── */}
-      <section className="py-24 px-6 lg:px-8 bg-gray-50">
+      <section className="py-24 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <AnimateOnScroll className="text-center mb-16">
             <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Why Top Publishers Align With Us</p>
@@ -335,7 +412,9 @@ export default function Publishers() {
             className="grid md:grid-cols-3 gap-8">
             {benefits.map((b) => (
               <motion.div key={b.title} variants={cardVariant}
-                className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
+                className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${b.color}`}>{b.icon}</div>
                 <h3 className="font-bold text-gray-900 mb-3 text-lg">{b.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{b.desc}</p>
@@ -346,7 +425,7 @@ export default function Publishers() {
       </section>
 
       {/* ── TRAFFIC TYPES ── */}
-      <section className="py-24 px-6 lg:px-8 bg-white">
+      <section className="py-24 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <AnimateOnScroll className="text-center mb-16">
             <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Monetisation Pathways</p>
@@ -358,7 +437,9 @@ export default function Publishers() {
             className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {trafficTypes.map((t) => (
               <motion.div key={t.title} variants={cardVariant}
-                className="group p-6 rounded-2xl border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all bg-white hover:-translate-y-1">
+                className="group p-6 rounded-2xl border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all bg-white hover:-translate-y-1 glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-5 ${t.color}`}>{t.icon}</div>
                 <h3 className="font-bold text-gray-900 mb-3 text-base leading-tight">{t.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{t.desc}</p>
@@ -369,7 +450,7 @@ export default function Publishers() {
       </section>
 
       {/* ── TOOLSETS ── */}
-      <section className="py-24 px-6 lg:px-8 bg-gray-50">
+      <section className="py-24 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <AnimateOnScroll className="text-center mb-16">
             <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Platform Capabilities</p>
@@ -380,7 +461,9 @@ export default function Publishers() {
           <div className="space-y-6 max-w-4xl mx-auto">
             {toolsets.map((tool, i) => (
               <AnimateOnScroll key={tool.title} variants={i % 2 === 0 ? slideLeft : slideRight}>
-                <div className="flex gap-6 bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+                <div className="flex gap-6 bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                  <div className="shine-overlay" />
+                  <div className="shine-border" />
                   <div className="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-100">
                     {tool.icon}
                   </div>
@@ -413,7 +496,9 @@ export default function Publishers() {
                 { title: "Authorised Material Use", desc: "Publishers must only deploy promotional codes, banners, and text copy explicitly issued through the Linktrackify interface. The use of unauthorised, expired, or third-party sourced materials is strictly prohibited." },
               ].map((item, i) => (
                 <motion.div key={item.title} variants={cardVariant}
-                  className="flex gap-5 bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                  className="flex gap-5 bg-slate-800 rounded-2xl p-6 border border-slate-700 glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                  <div className="shine-overlay" />
+                  <div className="shine-border" />
                   <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold text-sm">
                     {String(i + 1).padStart(2, "0")}
                   </div>
@@ -429,7 +514,7 @@ export default function Publishers() {
       </section>
 
       {/* ── ONBOARDING STEPS ── */}
-      <section className="py-24 px-6 lg:px-8 bg-white">
+      <section className="py-24 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <AnimateOnScroll className="text-center mb-16">
             <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">How To Join</p>
@@ -442,7 +527,9 @@ export default function Publishers() {
             <div className="hidden md:block absolute top-12 left-[20%] right-[20%] h-0.5 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 z-0" />
             {steps.map((step) => (
               <motion.div key={step.number} variants={cardVariant}
-                className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 z-10 text-center">
+                className="relative bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 z-10 text-center glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <div className="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 font-bold text-lg shadow-md shadow-blue-100">
                   {step.number}
                 </div>
@@ -455,7 +542,7 @@ export default function Publishers() {
       </section>
 
       {/* ── FAQ ── */}
-      <section className="py-24 px-6 lg:px-8 bg-gray-50">
+      <section className="py-24 px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <AnimateOnScroll className="text-center mb-14">
             <p className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-3">Publisher FAQ</p>
@@ -466,7 +553,9 @@ export default function Publishers() {
           <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }}
             className="space-y-3">
             {faqs.map((faq, i) => (
-              <motion.div key={i} variants={cardVariant} className="border border-gray-100 rounded-2xl overflow-hidden bg-white">
+              <motion.div key={i} variants={cardVariant} className="border border-gray-100 rounded-2xl overflow-hidden bg-white glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+                <div className="shine-overlay" />
+                <div className="shine-border" />
                 <button className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}>
                   <span className="text-sm font-semibold text-gray-900 pr-4">{faq.q}</span>
@@ -488,9 +577,11 @@ export default function Publishers() {
       </section>
 
       {/* ── BOTTOM CTA ── */}
-      <section className="py-24 px-6 lg:px-8 bg-white">
+      <section className="py-24 px-6 lg:px-8">
         <AnimateOnScroll>
-          <div className="max-w-4xl mx-auto text-center bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-16 shadow-2xl shadow-blue-100 relative overflow-hidden">
+          <div className="max-w-4xl mx-auto text-center bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-16 shadow-2xl shadow-blue-100 relative overflow-hidden glow-card" onMouseMove={handleTiltMove} onMouseLeave={handleTiltLeave}>
+            <div className="shine-overlay" />
+            <div className="shine-border" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.15),transparent)]" />
             <div className="relative">
               <p className="text-blue-200 text-sm font-semibold uppercase tracking-widest mb-4">Join the Network</p>
@@ -498,12 +589,12 @@ export default function Publishers() {
               <p className="text-blue-100 text-lg mb-10 max-w-xl mx-auto leading-relaxed">Gain access to premium offers, rely on precise tracking, and scale your digital assets with a network designed around the modern publisher.</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <button onClick={() => setShowForm(true)}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-blue-700 font-bold px-8 py-4 rounded-xl transition-all shadow-md text-sm hover:-translate-y-0.5 hover:shadow-lg">
+                  className="shiny-btn">
                   Apply to Linktrackify Today
                   <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </button>
                 <Link to="/contact-us"
-                  className="w-full sm:w-auto inline-flex items-center justify-center text-blue-100 hover:text-white font-semibold px-8 py-4 rounded-xl border border-blue-400 hover:border-blue-200 transition-all text-sm">
+                  className="shiny-btn shiny-btn-outline">
                   Contact Network Compliance
                 </Link>
               </div>
