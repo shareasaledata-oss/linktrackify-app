@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
@@ -163,67 +163,6 @@ function PublisherForm({ onClose }) {
         ))}
       </div>
     </form>
-  );
-}
-
-function ParticlesBackground() {
-  const initParticles = useCallback(() => {
-    const oldCanvas = document.querySelector('#particles-bg canvas');
-    if (oldCanvas) oldCanvas.remove();
-    if (window.pJSDom?.length > 0) {
-      window.pJSDom.forEach((p) => p.pJS.fn.vendors.destroypJS());
-      window.pJSDom = [];
-    }
-    window.particlesJS('particles-bg', {
-      particles: {
-        number: { value: 100, density: { enable: true, value_area: 900 } },
-        color: { value: '#2563eb' },
-        shape: { type: 'circle', stroke: { width: 0.5, color: '#3b82f6' } },
-        opacity: { value: 0.4, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1 } },
-        size: { value: 2.5, random: true, anim: { enable: true, speed: 2, size_min: 0.5 } },
-        line_linked: { enable: true, distance: 160, color: '#2563eb', opacity: 0.15, width: 1 },
-        move: { enable: true, speed: 1.5, random: true, out_mode: 'bounce' },
-      },
-      interactivity: {
-        detect_on: 'canvas',
-        events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
-        modes: { grab: { distance: 220, line_linked: { opacity: 0.6 } }, push: { particles_nb: 4 } },
-      },
-      retina_detect: true,
-    });
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const existingScript = document.getElementById('particles-script');
-    if (existingScript) {
-      if (window.particlesJS) initParticles();
-      return;
-    }
-    const script = document.createElement('script');
-    script.id = 'particles-script';
-    script.src = 'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js';
-    script.async = true;
-    document.body.appendChild(script);
-    script.onload = () => initParticles();
-    return () => {
-      const oldCanvas = document.querySelector('#particles-bg canvas');
-      if (oldCanvas) oldCanvas.remove();
-      if (window.pJSDom?.length > 0) {
-        window.pJSDom.forEach((p) => p.pJS.fn.vendors.destroypJS());
-        window.pJSDom = [];
-      }
-    };
-  }, [initParticles]);
-
-  return (
-    <div
-      id="particles-bg"
-      style={{
-        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0,
-        background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 40%, #e8f4fd 70%, #f0fdf4 100%)',
-      }}
-    />
   );
 }
 
