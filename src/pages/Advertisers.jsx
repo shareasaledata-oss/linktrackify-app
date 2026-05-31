@@ -145,7 +145,7 @@ function AdvertiserForm({ onClose }) {
   );
 }
 
-function ParticlesBackground() {
+
   const initParticles = useCallback(() => {
     const oldCanvas = document.querySelector('#particles-bg canvas');
     if (oldCanvas) oldCanvas.remove();
@@ -192,20 +192,6 @@ function ParticlesBackground() {
         window.pJSDom.forEach((p) => p.pJS.fn.vendors.destroypJS());
         window.pJSDom = [];
       }
-    };
-  }, [initParticles]);
-
-  return (
-    <div
-      id="particles-bg"
-      style={{
-        position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0,
-        background: 'linear-gradient(135deg, #ffffff 0%, #f0f7ff 40%, #e8f4fd 70%, #f0fdf4 100%)',
-      }}
-    />
-  );
-}
-
 export default function Advertisers() {
   const [showForm, setShowForm] = useState(false);
 
