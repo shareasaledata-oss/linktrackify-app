@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Shield, BarChart2, Link2, DollarSign, Star, Target, Lock, Users, Globe, Search, Code, Package, CheckCircle } from "lucide-react";
+import { Shield, BarChart2, Link2, DollarSign, Star, Target, Lock, Users, Globe, Search, Code, Package } from "lucide-react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
